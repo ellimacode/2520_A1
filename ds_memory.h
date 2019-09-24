@@ -7,7 +7,7 @@
 #include <string.h>
 
 /* indicates the maximum number of blocks of memory */
-MAX_BLOCKS 4096
+#define MAX_BLOCKS 4096
 
 /* this data structure counts the number of read and
    write operations performed */

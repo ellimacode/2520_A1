@@ -1,10 +1,10 @@
-#include <stdio.h>>
+#include <stdio.h>
 #include "ds_memory.h"
 
 int main()
 {
+   
 
-   printf("hello world\n");
 
-
+return 0;
 }
