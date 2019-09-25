@@ -52,9 +52,13 @@ for (j = 0; j < MAX_BLOCKS; j++)
   return 0;
 }
 
+/* print out the contents of all the
+   blocks and the counts variables */
 int ds_init(char *filename)
 {
 
+
+  /* set reads and writes count to 0 */
   ds_counts.reads = 0;
   ds_counts.writes = 0;
 
@@ -65,7 +69,29 @@ int ds_init(char *filename)
   /* read in all the blocks from the file */
   fread(&ds_file.block, sizeof(struct ds_blocks_struct), 1, ds_file.fp);
 
+/* prints out contents of all blocks, one
+   at a time */
+/*for (i = 0; i < MAX_BLOCKS; i++)
+{
+
+} */
 
 
   return 0;
 }
+
+/* test ds_init function */
+/*int ds_test_init(char *filename)
+{
+  int i;
+
+  for (i = 0; i < MAX_BLOCKS; i++)
+  {
+
+    printf("Block #   start   length   alloced\n");
+    printf("%d        %lu     %lu      %c\n", i, ds_file.block[i].start, ds_file.block[i].length, ds_file.block[i].alloced);
+
+  }
+
+return 0;
+} */

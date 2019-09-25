@@ -5,15 +5,15 @@ int main()
 {
 
   /* check return value created by ds_create */
-   if (ds_create("test.bin", 1234) == 0)
+   if (ds_init("test.bin") == 0)
    {
-     printf("Success\n");
+     printf("Success!\n");
 
    }
 
    else
    {
-     printf("Failure\n");
+     printf("Failure!\n");
    }
 
 
