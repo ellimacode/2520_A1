@@ -6,6 +6,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* global variables*/
+/* global variable - holds the file pointer and blocks array */
+struct ds_file_struct ds_file;
+/* global variable - holds the read and write counts */
+struct ds_counts_struct ds_counts;
+
+
 /* indicates the maximum number of blocks of memory */
 #define MAX_BLOCKS 4096
 
