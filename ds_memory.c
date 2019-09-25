@@ -14,13 +14,18 @@ int ds_create(char *filename, long size)
 
   int i;
   int j;
-  FILE *fp;
   char writeBytes;
 
-  /* open a file and write block array */
-  fp = fopen(filename, "wb+");
-  fwrite(&ds_file.block, sizeof(struct ds_blocks_struct), 1, fp);
+  /* open file to write into binary */
+  FILE *fp = fopen(filename, "wb+");
 
+  if (fp == NULL)
+  {
+    printf("The file doesn't exist!\n");
+  }
+
+  /* open a file and write block array */
+  fwrite(&ds_file.block, sizeof(struct ds_blocks_struct), 1, fp);
 
 /* accessing the block attribute of global variable
    in a for loop */
@@ -37,9 +42,13 @@ for (i = 0; i < MAX_BLOCKS; i++)
 for (j = 0; j < MAX_BLOCKS; j++)
 {
 
-  writeBytes = fwrite(&ds_file.block, sizeof(struct ds_blocks_struct), 1, fp);
+  fwrite(&writeBytes, sizeof(writeBytes), 1, fp);
 
 }
+
+ /* close the file */
+ fclose(fp);
+
 
 
   return 0;
