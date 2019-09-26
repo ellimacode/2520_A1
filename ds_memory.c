@@ -47,8 +47,6 @@ for (j = 0; j < MAX_BLOCKS; j++)
  /* close the file */
  fclose(ds_file.fp);
 
-
-
   return 0;
 }
 
@@ -56,8 +54,6 @@ for (j = 0; j < MAX_BLOCKS; j++)
    blocks and the counts variables */
 int ds_init(char *filename)
 {
-
-
   /* set reads and writes count to 0 */
   ds_counts.reads = 0;
   ds_counts.writes = 0;
@@ -69,16 +65,58 @@ int ds_init(char *filename)
   /* read in all the blocks from the file */
   fread(&ds_file.block, sizeof(struct ds_blocks_struct), 1, ds_file.fp);
 
-/* prints out contents of all blocks, one
-   at a time */
-/*for (i = 0; i < MAX_BLOCKS; i++)
-{
-
-} */
-
-
   return 0;
 }
+
+/* search the block array, checking the appropriate
+   amount of memory has been allocated */
+   long ds_malloc(long amount)
+   {
+     int i, j;
+
+     printf("Searching for block with amount=%lu\n", amount);
+
+     for (i = 0; i < MAX_BLOCKS; i++)
+     {
+       /*first block is unused and large enough to hold amount */
+       if ((ds_file.block[i].length >= amount) && (ds_file.block[i].alloced == 0))
+       {
+
+         printf("Block %d with length=%lu is not yet alloced\n", i, ds_file.block[i].length);
+
+         ds_file.block[i].length = amount;
+         ds_file.block[i].alloced = 1;
+
+         for (j = i; j < MAX_BLOCKS; j++)
+         {
+           /* second block, leftover memory of original block */
+           if (ds_file.block[j].length == 0)
+           {
+             /* set start value to original block's start value
+                plus amount */
+             ds_file.block[j].start = ds_file.block[j-1].start + amount;
+
+             /* set length to original block's length value
+                minu amount */
+             ds_file.block[j].length = ds_file.block[j-1].length - amount;
+
+             /* set alloced to 0 */
+             ds_file.block[j].alloced = 0;
+
+           }
+
+         }
+
+       }
+
+       /* return start of first block found */
+       return ds_file.block[i].start;
+     }
+
+     printf("Done loop\n");
+
+   return 0;
+   }
 
 /* test ds_init function */
 /*int ds_test_init(char *filename)

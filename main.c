@@ -3,18 +3,11 @@
 
 int main()
 {
+ds_create("test.bin", 1234);
 
-  /* check return value created by ds_create */
-   if (ds_init("test.bin") == 0)
-   {
-     printf("Success!\n");
+ds_malloc(10);
 
-   }
-
-   else
-   {
-     printf("Failure!\n");
-   }
+ds_malloc(100000);
 
 
 return 0;
