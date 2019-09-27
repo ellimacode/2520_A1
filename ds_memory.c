@@ -29,6 +29,7 @@ int ds_create(char *filename, long size)
    in a for loop */
 for (i = 0; i < MAX_BLOCKS; i++)
 {
+
   ds_file.block[i].start = 0;
   ds_file.block[i].length = 0;
   ds_file.block[i].alloced = 0;
@@ -62,74 +63,130 @@ int ds_init(char *filename)
      writing at start of beginning of the file */
   ds_file.fp = fopen(filename, "rb+");
 
+  if (ds_file.fp == NULL)
+  {
+    printf("The file doesn't exist\n");
+  }
+
   /* read in all the blocks from the file */
-  fread(&ds_file.block, sizeof(struct ds_blocks_struct), 1, ds_file.fp);
+  fwrite(&ds_file.block, sizeof(struct ds_blocks_struct), 1, ds_file.fp);
 
   return 0;
 }
 
 /* search the block array, checking the appropriate
    amount of memory has been allocated */
-   long ds_malloc(long amount)
-   {
-     int i, j;
+long ds_malloc(long amount)
+{
+  int i, j;
 
-     printf("Searching for block with amount=%lu\n", amount);
 
-     for (i = 0; i < MAX_BLOCKS; i++)
-     {
-       /*first block is unused and large enough to hold amount */
-       if ((ds_file.block[i].length >= amount) && (ds_file.block[i].alloced == 0))
-       {
+  for (i = 0; i < MAX_BLOCKS; i++)
+  {
 
-         printf("Block %d with length=%lu is not yet alloced\n", i, ds_file.block[i].length);
+    /* checks block length is greater than or equal to amount, and alloced is 0*/
+    if ((ds_file.block[i].length >= amount) && (ds_file.block[i].alloced == 0))
+    {
 
-         ds_file.block[i].length = amount;
-         ds_file.block[i].alloced = 1;
+      for (j = i; j < MAX_BLOCKS; j++)
+      {
 
-         for (j = i; j < MAX_BLOCKS; j++)
-         {
-           /* second block, leftover memory of original block */
-           if (ds_file.block[j].length == 0)
-           {
-             /* set start value to original block's start value
-                plus amount */
-             ds_file.block[j].start = ds_file.block[j-1].start + amount;
+        /* checks second block length is equal to 0 */
+        if ((ds_file.block[j].length == 0) && (ds_file.block[j].alloced == 0))
+        {
 
-             /* set length to original block's length value
-                minu amount */
-             ds_file.block[j].length = ds_file.block[j-1].length - amount;
+          /* sets the start value of second block to original block's
+             start value plus amount */
+          ds_file.block[j].start = ds_file.block[i].start + amount;
 
-             /* set alloced to 0 */
-             ds_file.block[j].alloced = 0;
+          /* sets the length of second block to original block's length
+             minus amount */
+          ds_file.block[j].length = ds_file.block[i].length - amount;
 
-           }
+          /* set second block's alloced to 0 */
+          ds_file.block[j].alloced = 0;
+          break;
+        }
 
-         }
 
-       }
+      }
 
-       /* return start of first block found */
-       return ds_file.block[i].start;
-     }
+      ds_file.block[i].length = amount;
+      ds_file.block[i].alloced = 1;
 
-     printf("Done loop\n");
+      return ds_file.block[i].start;
+    }
 
-   return 0;
-   }
+  }
+
+return -1;
+}
+
+/* search through the block array, until it finds the block's
+   start value matches start */
+void ds_free(long start)
+{
+
+  int i;
+
+  for (i = 0; i < MAX_BLOCKS; i++)
+  {
+
+    if (ds_file.block[i].start == start)
+    {
+      /* set the value allocated value to 0 */
+      ds_file.block[i].alloced = 0;
+    }
+
+    /* if no block is found, should return without
+       doing anything */
+    else if (ds_file.block[i].start != start)
+    {
+      return;
+    }
+
+  }
+
+}
+
+/* this function should write block array into header at beginning of the file
+   and close the file */
+int ds_finish()
+{
+
+  /* write block array */
+  fwrite(&ds_file.block, sizeof(struct ds_blocks_struct), 1, ds_file.fp);
+
+  /* close the file */
+  fclose(ds_file.fp);
+
+  /* print out the values of counts data structure */
+  printf("reads: %d\n", ds_counts.reads);
+  printf("writes: %d\n", ds_counts.writes);
+
+return 1;
+}
+
+/* this function should write the block array into the header
+   at the beginning of the file and close the file*/
+
 
 /* test ds_init function */
 /*int ds_test_init(char *filename)
 {
   int i;
 
+  printf("Block #   start   length   alloced\n");
+
   for (i = 0; i < MAX_BLOCKS; i++)
   {
 
-    printf("Block #   start   length   alloced\n");
     printf("%d        %lu     %lu      %c\n", i, ds_file.block[i].start, ds_file.block[i].length, ds_file.block[i].alloced);
 
   }
 
+  printf("reads = %d\n",ds_counts.reads);
+  printf("writes = %d\n", ds_counts.writes);
+
 return 0;
-} */
+}*/
