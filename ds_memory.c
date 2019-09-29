@@ -14,6 +14,8 @@ int ds_create(char *filename, long size)
   int j;
   char writeBytes;
 
+  size = 0;
+
   /* open file to write into binary */
   ds_file.fp = fopen(filename, "wb+");
 
@@ -40,6 +42,7 @@ for (i = 0; i < MAX_BLOCKS; i++)
     ds_file.block[i].alloced = 0;
   }
 
+  /* set other entries in the header to 0 */
   ds_file.block[i].start = 0;
   ds_file.block[i].length = 0;
   ds_file.block[i].alloced = 0;
@@ -65,10 +68,6 @@ for (j = 0; j < MAX_BLOCKS; j++)
    blocks and the counts variables */
 int ds_init(char *filename)
 {
-  /* set reads and writes count to 0 */
-  ds_counts.reads = 0;
-  ds_counts.writes = 0;
-
   /* open the file for both reading and
      writing at start of beginning of the file */
   ds_file.fp = fopen(filename, "rb+");
@@ -78,12 +77,16 @@ int ds_init(char *filename)
     printf("The file doesn't exist\n");
     return -1;
   }
-  
+
   /* move to beginning of the file */
   fseek(ds_file.fp, 0, SEEK_SET);
 
   /* read in all the blocks from the file */
   fread(ds_file.block, sizeof(struct ds_blocks_struct), MAX_BLOCKS, ds_file.fp);
+
+  /* set read and write counts to 0 */
+  ds_counts.reads = 0;
+  ds_counts.writes = 0;
 
   return 0;
 }
@@ -136,7 +139,7 @@ void *ds_read(void *ptr, long start, long bytes)
 {
 	/* size of block array */
 	long offset;
-	
+
 	/* offset(size of the block array) the length of header in binary file */
 	offset = (sizeof(struct ds_blocks_struct) * MAX_BLOCKS);
 	
@@ -154,6 +157,7 @@ void *ds_read(void *ptr, long start, long bytes)
 	/* if successful, return address ptr */
 	if (fread(ptr, sizeof(struct ds_blocks_struct), bytes, ds_file.fp) == 1)
 	{
+		
 		return ptr;
 	}
 	
@@ -168,7 +172,9 @@ void *ds_read(void *ptr, long start, long bytes)
 /* this function should move file pointer to start location offset
    by the length of header in binary file */
 long ds_write(long start, void *ptr, long bytes)
-{	
+{
+        long returnVal;
+
 	/* size of block array */
 	long offset;
 	
@@ -178,11 +184,11 @@ long ds_write(long start, void *ptr, long bytes)
 	/* move file pointer to start location offset by length of
 	 * header in binary file */
 	fseek(ds_file.fp, offset + start, SEEK_SET);
+
 	
 	/* write 'bytes' bytes to file from address ptr */
 	fwrite(ptr, sizeof(struct ds_blocks_struct), bytes, ds_file.fp);
 	
-	printf("here\n");
 
     /* increment the value of writes in counts
      * by 1*/
@@ -191,16 +197,16 @@ long ds_write(long start, void *ptr, long bytes)
     	/* if successful, return value of start */
 	if (fwrite(ptr, sizeof(struct ds_blocks_struct), bytes, ds_file.fp) == 1)
 	{
-		return start;
+		returnVal = start;
 	}
 	
 	/* return -1 if unsuccessful */
 	else
 	{
-		return -1;
+		returnVal = -1;
 	}
 
-
+return returnVal;
 }
 
 /* search through the block array, until it finds the block's
@@ -245,6 +251,7 @@ int ds_finish()
   /* print out the values of counts data structure */
   printf("reads: %d\n", ds_counts.reads);
   printf("writes: %d\n", ds_counts.writes);
+  
 
   /* check if successful, return 1 */
   if (fwrite(ds_file.block, sizeof(struct ds_blocks_struct), MAX_BLOCKS, ds_file.fp) == 1)
