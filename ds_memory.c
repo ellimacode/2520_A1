@@ -1,3 +1,7 @@
+/* Full Name: Camille Cua
+ * Student ID number: 1046663
+ * Email: ccua@uoguelph.ca */
+
 #include "ds_memory.h"
 
 /* global variable - holds the file pointer and blocks array */
@@ -145,7 +149,7 @@ void *ds_read(void *ptr, long start, long bytes)
 	
 	/* moves file to specific location */
 	fseek(ds_file.fp, offset + start, SEEK_SET);
-	
+
 	/*read 'bytes' bytes from the location given by start */
 	fread(ptr, sizeof(struct ds_blocks_struct), bytes, ds_file.fp);
 	
@@ -166,14 +170,14 @@ void *ds_read(void *ptr, long start, long bytes)
 	{
 		return NULL;
 	}
-	
+
 }
 
 /* this function should move file pointer to start location offset
    by the length of header in binary file */
 long ds_write(long start, void *ptr, long bytes)
 {
-        long returnVal;
+    long returnVal;
 
 	/* size of block array */
 	long offset;

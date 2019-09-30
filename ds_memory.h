@@ -1,3 +1,7 @@
+/* Full Name: Camille Cua
+ * Student ID number: 1046663
+ * Email: ccua@uoguelph.ca */
+
 /* defining the constant, copying the three structures and
    then copyin the prototypes for the functions */
 /* add semi-colon for each function prototype */
@@ -47,6 +51,6 @@ int ds_init(char *filename);
 long ds_malloc(long amount);
 void ds_free(long start);
 void *ds_read(void *ptr, long start, long bytes);
-long ds_write(long write, void *ptr, long bytes);
+long ds_write(long start, void *ptr, long bytes);
 int ds_finish();
 /*int ds_test_init(char *filename);*/
